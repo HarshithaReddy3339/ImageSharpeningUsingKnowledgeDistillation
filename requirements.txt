@@ -1,0 +1,18 @@
+# Core Deep Learning Libraries
+torch
+torchvision
+
+# Image and Video Processing
+opencv-python
+Pillow
+numpy
+scikit-image
+
+# Visualization and Utilities
+matplotlib
+tqdm
+
+# Web Framework and Template Engine
+flask<3.0.0
+Werkzeug<3.0.0
+Jinja2<3.1.0

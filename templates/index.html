@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Sharpening</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .image-preview {
+            max-width: 100%;
+            margin: 20px 0;
+        }
+        .button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        #loading {
+            display: none;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Image Sharpening Tool</h1>
+        <p>Upload a blurry image to enhance its sharpness</p>
+        
+        <input type="file" id="imageInput" accept="image/*" style="display: none;">
+        <button class="button" onclick="document.getElementById('imageInput').click()">Choose Image</button>
+        
+        <div id="loading">Processing...</div>
+        
+        <div id="imageContainer">
+            <img id="originalImage" class="image-preview" style="display: none;">
+            <img id="sharpenedImage" class="image-preview" style="display: none;">
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('imageInput').addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const originalImage = document.getElementById('originalImage');
+                    originalImage.src = e.target.result;
+                    originalImage.style.display = 'block';
+                    
+                    // Hide previous sharpened image if any
+                    document.getElementById('sharpenedImage').style.display = 'none';
+                    
+                    // Show loading indicator
+                    document.getElementById('loading').style.display = 'block';
+                    
+                    // Send image to server
+                    const formData = new FormData();
+                    formData.append('image', document.getElementById('imageInput').files[0]);
+                    
+                    fetch('/sharpen', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.blob())
+                    .then(blob => {
+                        const sharpenedImage = document.getElementById('sharpenedImage');
+                        sharpenedImage.src = URL.createObjectURL(blob);
+                        sharpenedImage.style.display = 'block';
+                        document.getElementById('loading').style.display = 'none';
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        document.getElementById('loading').style.display = 'none';
+                        alert('Error processing image');
+                    });
+                }
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+    </script>
+</body>
+</html>
